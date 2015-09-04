@@ -7,11 +7,15 @@ All examples need a url serving sample json. Use https://github.com/saurabh-hira
 * Examples
 
 ````
+  $ cat > /var/tmp/test.json
+    {"this": "that"}
+
   $ ./jsonchecker -H localhost -p 5555 --uri /json/var/tmp/test.json
 
   $ ./jsonchecker -H localhost -p 5555 --uri /json/var/tmp/test.json --match_key this
 
-  $ ./jsonchecker -H localhost -p 5555 --uri /json/var/tmp/test.json --match_key_val this:that
+  $ ./jsonchecker -H localhost -p 5555 --uri /json/var/tmp/test.json \
+                  --match_key_val this:that
 
   $ ./jsonchecker -H localhost -p 5555 --uri /json/var/tmp/test.json --match_key doesnotexist
 
