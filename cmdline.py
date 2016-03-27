@@ -8,6 +8,7 @@
 # - add support to dump specific headers 
 # - add key ==, >=, <=, >, < value callback
 # - add warning, critical callback
+# - update README with examples and TODO
 # - release first cut pip
 # - add nports - revisit output format
 
