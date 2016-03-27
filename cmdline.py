@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+""" json analyzer """
+
+import os
+import json
+import click
+
+from jsonalyzer import defaults
+from jsonalyzer import utils
+
+def _load_callback(ctx, param, value):
+  """ Load jsonalzyer callback """
+  if value is None:
+    return value
+
+  module_src, callback_func = value.strip().split(':')
+
+  mod = None
+  try:
+    if os.path.exists(module_src):
+      mod = utils.load_module_frm_file(module_src)
+    else:
+      mod = utils.load_module_by_name(module_src)
+    return getattr(mod, callback_func)
+  except Exception as load_callback_exception:
+    raise click.BadParameter(str(load_callback_exception))
+
+def _load_json_frm_str(ctx, param, value):
+  """ Load json from string """
+  if value is None:
+    return value
+  try:
+    return utils.load_json_frm_str(value)
+  except Exception as exception:
+    raise click.BadParameter(str(exception))
+
+def validate_protocol(ctx, param, value):
+  """ Validate web command's argument - protocol """
+  if value not in defaults.VALID_PROTOCOLS:
+    raise click.BadParameter('%s: Valid values:' % defaults.VALID_PROTOCOLS)
+  return value
+
+def output_printer(output):
+  """ Common output printer """
+  color = 'green'
+  if 'color' in output:
+    color = output['color']
+  elif output['exit_code'] != 0:
+    color = 'red'
+
+  click.echo(click.style(output['msg'], fg=color))
+  print json.dumps(output['ds'], indent=2)
+  return True
+
+def common_worker(loader, ctx, **kwargs):
+  """ Common worker - load the json, run the callback on it """
+  try:
+    json_ds = loader(**kwargs)
+  except Exception as exception:
+    click.echo(click.style('ERROR: Failed to load json. Dumping parameters', 
+                           fg='red'))
+    click.echo(json.dumps(kwargs, indent=2))
+    ctx.exit(1)
+
+  output = ctx.obj['callback'](json_ds, **kwargs)
+  ctx.obj['output_printer'](output)
+  ctx.exit(output['exit_code'])
+
+@click.group()
+@click.option('-c', '--callback',
+              help='callback to act upon json. filepath:func or module_name:func',
+              callback=_load_callback,
+              default=defaults.CALLBACK)
+@click.option('--params', help='stringified json to pass to callback',
+              callback=_load_json_frm_str,
+              default=None)
+@click.option('--verbose/--no-verbose', help='callback function to act upon json',
+              default=False)
+@click.pass_context
+def jsonalyzer(ctx, **kwargs):
+  """ Top level command for jsonalyzer """
+  ctx.obj['verbose'] = kwargs['verbose']
+  ctx.obj['callback'] = kwargs['callback']
+  ctx.obj['params'] = kwargs['params']
+  ctx.obj['output_printer'] = output_printer
+
+@jsonalyzer.command('web')
+@click.argument('PROTOCOL', callback=validate_protocol)
+@click.option('-H', '--host', help='host. Default: %s' % defaults.HOST,
+              default=defaults.HOST)
+@click.option('-u', '--uri', help='uri. Default: %s' % defaults.URI,
+              default=defaults.URI)
+@click.option('-p', '--port', help='url port',
+              type=click.IntRange(min=1, max=65535),
+              default=None)
+@click.option('-t', '--timeout', help='connection timeout. ' +
+              'Default: %d' % defaults.CONN_TIMEOUT,
+              default=defaults.CONN_TIMEOUT)
+@click.option('--username', help='username',
+              default=None)
+@click.option('--password', help='password',
+              default=defaults.URI)
+@click.option('--headers',
+              help='comma separated HTTP headers to dump in output',
+              default=None)
+@click.pass_context
+def load_from_web(ctx, **kwargs):
+  """ 
+  load json from web
+
+  PROTOCOL: the protocol to use - http|https
+  """
+  kwargs.update(ctx.obj)
+  common_worker(utils.load_json_frm_url, ctx, **kwargs)
+  
+@jsonalyzer.command('file')
+@click.argument('FILE', type=click.Path(exists=True))
+@click.pass_context
+def load_from_file(ctx, **kwargs):
+  """ 
+  load json from a file
+
+  FILE: system file path
+  """
+  kwargs.update(ctx.obj)
+  common_worker(utils.load_json_frm_file, ctx, **kwargs)
+
+if __name__ == '__main__':
+  jsonalyzer(obj={})
