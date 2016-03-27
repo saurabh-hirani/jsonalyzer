@@ -6,9 +6,10 @@
 # - allow user to specify url directly
 # - add support for flattened keys
 # - add support to dump specific headers 
-# - add key == value check
-# - add key >= or <= value check
-# - add warning, critical values
+# - add key ==, >=, <=, >, < value callback
+# - add warning, critical callback
+# - release first cut pip
+# - add nports - revisit output format
 
 import os
 import json
