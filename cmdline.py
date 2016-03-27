@@ -77,7 +77,7 @@ def common_worker(loader, **kwargs):
 @click.option('--params', help='stringified json to pass to callback',
               callback=_load_json_frm_str,
               default=None)
-@click.option('--verbose/--no-verbose', help='callback function to act upon json',
+@click.option('--verbose/--no-verbose', help='verbose mode',
               default=False)
 @click.pass_context
 def jsonalyzer(ctx, **kwargs):
