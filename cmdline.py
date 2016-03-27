@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 """ json analyzer """
 
+# TODO
+# - decouple worker from output printer
+# - allow user to specify url directly
+# - add support for flattened keys
+# - add support to dump specific headers 
+# - add key == value check
+# - add key >= or <= value check
+# - add warning, critical values
+
 import os
 import json
 import click
