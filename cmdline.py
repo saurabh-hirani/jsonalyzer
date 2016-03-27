@@ -52,19 +52,22 @@ def output_printer(output):
   print json.dumps(output['ds'], indent=2)
   return True
 
-def common_worker(loader, ctx, **kwargs):
+def common_worker(loader, **kwargs):
   """ Common worker - load the json, run the callback on it """
   try:
     json_ds = loader(**kwargs)
   except Exception as exception:
     click.echo(click.style('ERROR: Failed to load json. Dumping parameters', 
                            fg='red'))
+    # stringify the functions otherwise as json can't encode them
+    for key in ['callback', 'output_printer']:
+      kwargs[key] = str(kwargs[key])
     click.echo(json.dumps(kwargs, indent=2))
-    ctx.exit(1)
+    return 1
 
-  output = ctx.obj['callback'](json_ds, **kwargs)
-  ctx.obj['output_printer'](output)
-  ctx.exit(output['exit_code'])
+  output = kwargs['callback'](json_ds, **kwargs)
+  kwargs['output_printer'](output)
+  return output['exit_code']
 
 @click.group()
 @click.option('-c', '--callback',
@@ -111,7 +114,7 @@ def load_from_web(ctx, **kwargs):
   PROTOCOL: the protocol to use - http|https
   """
   kwargs.update(ctx.obj)
-  common_worker(utils.load_json_frm_url, ctx, **kwargs)
+  ctx.exit(common_worker(utils.load_json_frm_url, **kwargs))
   
 @jsonalyzer.command('file')
 @click.argument('FILE', type=click.Path(exists=True))
@@ -123,7 +126,7 @@ def load_from_file(ctx, **kwargs):
   FILE: system file path
   """
   kwargs.update(ctx.obj)
-  common_worker(utils.load_json_frm_file, ctx, **kwargs)
+  ctx.exit(common_worker(utils.load_json_frm_file, **kwargs))
 
 if __name__ == '__main__':
   jsonalyzer(obj={})
