@@ -11,7 +11,7 @@ def no_op(json_ds, **kwargs):
 def has_key(json_ds, **kwargs):
   output = {
     'ds': json_ds,
-    'msg': 'OK: All good',
+    'msg': 'OK: ',
     'exit_code': 0,
   }
 
@@ -20,9 +20,12 @@ def has_key(json_ds, **kwargs):
     output['exit_code'] = 1
     return output
 
-  if kwargs['params']['key'] in json_ds:
+  target_key = kwargs['params']['key']
+
+  if target_key in json_ds:
+    output['msg'] += 'Found key - %s = %s' % (target_key, json_ds[target_key])
     return output
 
-  output['msg'] = 'ERROR: Key %s not found' % kwargs['params']['key']
+  output['msg'] = 'ERROR: Key %s not found' % target_key
   output['exit_code'] = 1
   return output
