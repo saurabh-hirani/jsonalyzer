@@ -109,9 +109,7 @@ def jsonalyzer(ctx, **kwargs):
 @click.pass_context
 def load_from_web(ctx, **kwargs):
   """ 
-  load json from web
-
-  PROTOCOL: the protocol to use - http|https
+  web http|https [options]
   """
   kwargs.update(ctx.obj)
   ctx.exit(common_worker(utils.load_json_frm_url, **kwargs))
@@ -121,9 +119,7 @@ def load_from_web(ctx, **kwargs):
 @click.pass_context
 def load_from_file(ctx, **kwargs):
   """ 
-  load json from a file
-
-  FILE: system file path
+  file filepath [options]
   """
   kwargs.update(ctx.obj)
   ctx.exit(common_worker(utils.load_json_frm_file, **kwargs))
