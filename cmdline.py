@@ -93,12 +93,12 @@ def jsonalyzer(ctx, **kwargs):
 @click.argument('PROTOCOL', callback=validate_protocol)
 @click.option('-H', '--host', help='host. Default: %s' % defaults.HOST,
               default=defaults.HOST)
-@click.option('-u', '--uri', help='uri. Default: %s' % defaults.URI,
+@click.option('--uri', help='uri. Default: %s' % defaults.URI,
               default=defaults.URI)
-@click.option('-p', '--port', help='url port',
+@click.option('--port', help='url port',
               type=click.IntRange(min=1, max=65535),
               default=None)
-@click.option('-t', '--timeout', help='connection timeout. ' +
+@click.option('--timeout', help='connection timeout. ' +
               'Default: %d' % defaults.CONN_TIMEOUT,
               default=defaults.CONN_TIMEOUT)
 @click.option('--username', help='username',
@@ -108,7 +108,7 @@ def jsonalyzer(ctx, **kwargs):
 @click.option('--headers',
               help='comma separated HTTP headers to dump in output',
               default=None)
-@click.option('-c', '--callback',
+@click.option('--callback',
               help='callback to act upon json. filepath:func or module_name:func',
               callback=_load_callback,
               default=defaults.CALLBACK)
@@ -125,7 +125,7 @@ def load_from_web(ctx, **kwargs):
   
 @jsonalyzer.command('file')
 @click.argument('FILE', type=click.Path(exists=True))
-@click.option('-c', '--callback',
+@click.option('--callback',
               help='callback to act upon json. filepath:func or module_name:func',
               callback=_load_callback,
               default=defaults.CALLBACK)
