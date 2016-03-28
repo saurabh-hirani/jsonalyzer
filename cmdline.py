@@ -81,21 +81,12 @@ def common_worker(loader, **kwargs):
   return output['exit_code']
 
 @click.group()
-@click.option('-c', '--callback',
-              help='callback to act upon json. filepath:func or module_name:func',
-              callback=_load_callback,
-              default=defaults.CALLBACK)
-@click.option('--params', help='stringified json to pass to callback',
-              callback=_load_json_frm_str,
-              default=None)
 @click.option('--verbose/--no-verbose', help='verbose mode',
               default=False)
 @click.pass_context
 def jsonalyzer(ctx, **kwargs):
   """ Top level command for jsonalyzer """
   ctx.obj['verbose'] = kwargs['verbose']
-  ctx.obj['callback'] = kwargs['callback']
-  ctx.obj['params'] = kwargs['params']
   ctx.obj['output_printer'] = output_printer
 
 @jsonalyzer.command('web')
@@ -117,6 +108,13 @@ def jsonalyzer(ctx, **kwargs):
 @click.option('--headers',
               help='comma separated HTTP headers to dump in output',
               default=None)
+@click.option('-c', '--callback',
+              help='callback to act upon json. filepath:func or module_name:func',
+              callback=_load_callback,
+              default=defaults.CALLBACK)
+@click.option('--params', help='stringified json to pass to callback',
+              callback=_load_json_frm_str,
+              default=None)
 @click.pass_context
 def load_from_web(ctx, **kwargs):
   """ 
@@ -127,6 +125,13 @@ def load_from_web(ctx, **kwargs):
   
 @jsonalyzer.command('file')
 @click.argument('FILE', type=click.Path(exists=True))
+@click.option('-c', '--callback',
+              help='callback to act upon json. filepath:func or module_name:func',
+              callback=_load_callback,
+              default=defaults.CALLBACK)
+@click.option('--params', help='stringified json to pass to callback',
+              callback=_load_json_frm_str,
+              default=None)
 @click.pass_context
 def load_from_file(ctx, **kwargs):
   """ 
