@@ -1,2 +1,6 @@
 *.pyc
 *.bkp
+*.txt
+build/
+dist/
+jsonalyzer.egg-info/

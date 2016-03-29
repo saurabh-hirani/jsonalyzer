@@ -4,13 +4,12 @@ setup(
   license='MIT',
   version='0.0.1',
   url='https://github.com/saurabh-hirani/jsonalyzer',
-  description=('Because one life is too short to write boilerplate json again and again'),
+  description=('Write callbacks for anlayzing json'),
   author='Saurabh Hirani',
   author_email='saurabh.hirani@gmail.com',
   packages=find_packages(),
   install_requires=[
     'click',
-    'imp',
     'importlib',
     'simplejson'
   ],
