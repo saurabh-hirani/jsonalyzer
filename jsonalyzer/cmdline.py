@@ -106,6 +106,8 @@ def common_worker(loader, **kwargs):
 @click.pass_context
 def jsonalyzer(ctx, **kwargs):
   """ Top level command for jsonalyzer """
+  if ctx.obj is None:
+    ctx.obj = {}
   for k in kwargs:
     ctx.obj[k] = kwargs[k]
   ctx.obj['output_printer'] = output_printer

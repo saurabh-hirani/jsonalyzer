@@ -11,11 +11,12 @@ setup(
   install_requires=[
     'click',
     'importlib',
-    'simplejson'
+    'simplejson',
+    'requests'
   ],
   entry_points = {
     'console_scripts': [
-      'jsonalyzer = jsonalyzer.cmdline:jsonalyzer',
+      'jsonalyzer=jsonalyzer.cmdline:jsonalyzer',
     ]
   }
 )
