@@ -79,16 +79,21 @@ def check_key_value_limits(json_ds, **kwargs):
     return output
 
   target_key = kwargs['params']['key']
-  value = json_ds[target_key]
+  value = float(json_ds[target_key])
 
   warning = float(kwargs['params']['warning'])
   critical = float(kwargs['params']['critical'])
 
   if value >= critical:
     output['status'] = 'CRITICAL'
-    output['msg'] = 'ERROR: %s >= critical limit %.2f' % (value, critical)
-  elif value >= warning:
-    output['status'] = 'WARNING'
-    output['msg'] = 'ERROR: %s >= warning limit %.2f' % (value, critical)
+    output['msg'] = 'ERROR: %s = %.2f >= critical limit %.2f' % (target_key,
+                                                                 value, critical)
+    return output
 
+  if value >= warning:
+    output['status'] = 'WARNING'
+    output['msg'] = 'ERROR: %s = %.2f >= warning limit %.2f' % (target_key, 
+                                                                value, warning)
+
+  output['msg'] = 'OK: %s = %.2f < %.2f' % (target_key, value, warning)
   return output

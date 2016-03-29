@@ -69,6 +69,8 @@ def common_worker(loader, **kwargs):
   """ Common worker - load the json, run the callback on it """
   try:
     json_ds = loader(**kwargs)
+    if kwargs['flatten']:
+      json_ds = utils.flatten_ds(json_ds)
   except Exception as exception:
     click.echo(click.style('ERROR: Failed to load json. Dumping parameters', 
                            fg='red'))
@@ -90,12 +92,22 @@ def common_worker(loader, **kwargs):
   return 2
 
 @click.group()
+@click.option('--flatten/--no-flatten', help='flatten ds',
+              default=False)
 @click.option('--verbose/--no-verbose', help='verbose mode',
               default=False)
+@click.option('--callback',
+              help='callback to act upon json. filepath:func or module_name:func',
+              callback=_load_callback,
+              default=defaults.CALLBACK)
+@click.option('--params', help='stringified json to pass to callback',
+              callback=_load_json_frm_str,
+              default=None)
 @click.pass_context
 def jsonalyzer(ctx, **kwargs):
   """ Top level command for jsonalyzer """
-  ctx.obj['verbose'] = kwargs['verbose']
+  for k in kwargs:
+    ctx.obj[k] = kwargs[k]
   ctx.obj['output_printer'] = output_printer
 
 @jsonalyzer.command('web')
@@ -116,13 +128,6 @@ def jsonalyzer(ctx, **kwargs):
               default=defaults.URI)
 @click.option('--headers',
               help='comma separated HTTP headers to dump in output',
-              default=None)
-@click.option('--callback',
-              help='callback to act upon json. filepath:func or module_name:func',
-              callback=_load_callback,
-              default=defaults.CALLBACK)
-@click.option('--params', help='stringified json to pass to callback',
-              callback=_load_json_frm_str,
               default=None)
 @click.pass_context
 def load_from_web(ctx, **kwargs):

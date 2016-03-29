@@ -31,5 +31,18 @@ def load_json_frm_str(jsonstr):
 def load_json_frm_file(filepath, **kwargs):
   return json.loads(open(filepath).read())
 
-def flatten_ds(ds):
-  pass
+def flatten_ds(data_struct, key="", path="", flattened=None):
+  """ Flatten a nested data structure """
+  if flattened is None:
+    flattened = {}
+  if type(data_struct) not in(dict, list):
+    flattened[((path + ".") if path else "") + key] = data_struct
+  elif isinstance(data_struct, list):
+    for i, item in enumerate(data_struct):
+      flatten_ds(item, "%d" % i, (path + '.' + key if path else key),
+                 flattened)
+  else:
+    for new_key, value in data_struct.items():
+      flatten_ds(value, new_key, (path + '.' + key if path else key),
+                 flattened)
+  return flattened
