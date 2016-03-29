@@ -2,6 +2,12 @@
 
 Because one life is too short to write boilerplate json again and again. Work in progress.
 
+## Install
+
+```
+$ pip install jsonalyzer
+```
+
 ## Examples
 
 Dumping initial list of examples. More to follow:
