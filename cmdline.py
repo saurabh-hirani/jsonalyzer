@@ -2,14 +2,13 @@
 """ json analyzer """
 
 # TODO
+# - release first cut pip
 # - decouple worker from output printer
 # - allow user to specify url directly
 # - add support for flattened keys
 # - add support to dump specific headers 
 # - add key ==, >=, <=, >, < value callback
-# - add warning, critical callback
 # - update README with examples and TODO
-# - release first cut pip
 # - add nports - revisit output format
 
 import os
@@ -56,8 +55,11 @@ def output_printer(output):
   color = 'green'
   if 'color' in output:
     color = output['color']
-  elif output['exit_code'] != 0:
-    color = 'red'
+  elif output['status'] != 'OK':
+    if output['status'] == 'WARNING':
+      color = 'yellow'
+    else:
+      color = 'red'
 
   click.echo(click.style(output['msg'], fg=color))
   print json.dumps(output['ds'], indent=2)
@@ -78,7 +80,14 @@ def common_worker(loader, **kwargs):
 
   output = kwargs['callback'](json_ds, **kwargs)
   kwargs['output_printer'](output)
-  return output['exit_code']
+
+  if output['status'] == 'OK':
+    return 0
+
+  if output['status'] == 'WARNING':
+    return 1
+
+  return 2
 
 @click.group()
 @click.option('--verbose/--no-verbose', help='verbose mode',
