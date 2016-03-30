@@ -92,17 +92,8 @@ def common_worker(loader, **kwargs):
   return 2
 
 @click.group()
-@click.option('--flatten/--no-flatten', help='flatten ds',
-              default=False)
 @click.option('--verbose/--no-verbose', help='verbose mode',
               default=False)
-@click.option('--callback',
-              help='callback to act upon json. filepath:func or module_name:func',
-              callback=_load_callback,
-              default=defaults.CALLBACK)
-@click.option('--params', help='stringified json to pass to callback',
-              callback=_load_json_frm_str,
-              default=None)
 @click.pass_context
 def jsonalyzer(ctx, **kwargs):
   """ Top level command for jsonalyzer """
@@ -131,6 +122,15 @@ def jsonalyzer(ctx, **kwargs):
 @click.option('--headers',
               help='comma separated HTTP headers to dump in output',
               default=None)
+@click.option('--callback',
+              help='callback to act upon json. filepath:func or module_name:func',
+              callback=_load_callback,
+              default=defaults.CALLBACK)
+@click.option('--params', help='stringified json to pass to callback',
+              callback=_load_json_frm_str,
+              default=None)
+@click.option('--flatten/--no-flatten', help='flatten ds',
+              default=False)
 @click.pass_context
 def load_from_web(ctx, **kwargs):
   """ 
@@ -148,6 +148,8 @@ def load_from_web(ctx, **kwargs):
 @click.option('--params', help='stringified json to pass to callback',
               callback=_load_json_frm_str,
               default=None)
+@click.option('--flatten/--no-flatten', help='flatten ds',
+              default=False)
 @click.pass_context
 def load_from_file(ctx, **kwargs):
   """ 

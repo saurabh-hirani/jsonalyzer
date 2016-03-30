@@ -28,8 +28,8 @@ def load_json_frm_str(jsonstr):
   except Exception as exception:
     raise Exception('Failed to load json string: %s: %s' % (jsonstr, exception))
 
-def load_json_frm_file(filepath, **kwargs):
-  return json.loads(open(filepath).read())
+def load_json_frm_file(**kwargs):
+  return json.loads(open(kwargs['file']).read())
 
 def flatten_ds(data_struct, key="", path="", flattened=None):
   """ Flatten a nested data structure """
